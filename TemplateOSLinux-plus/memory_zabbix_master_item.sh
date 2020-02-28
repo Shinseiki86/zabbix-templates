@@ -6,7 +6,8 @@ if [ -f "/etc/redhat-release" ]; then
 elif [ -f "/etc/lsb-release" ]; then
         MemUsage=`free -w | awk 'NR==2 {printf("%d %d %d %d",$2,$4,$6,$7)}'`
 else
-        echo "Not supported distribution."
+        MemUsage=`free -o | awk 'NR==2 {printf("%d %d %d %d",$2,$4,$6,$7)}'`
+        #echo "Not supported distribution."
 fi
 
 # Retrieve each element

@@ -8,6 +8,6 @@ from v$locked_object a, v$session b, dba_objects c, v$lock d
 where b.sid = a.session_id
     and a.object_id = c.object_id
     and d.sid = b.sid
-    and (d.ctime/1000)>60
+    and (d.ctime/1000)>180
 order by d.ctime desc;
 exit;
