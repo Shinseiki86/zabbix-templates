@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2019-12-14T19:17:43Z</date>
+    <groups>
+        <group>
+            <name>Templates/Applications</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template App Broker IBM</template>
+            <name>Template App Broker IBM</name>
+            <groups>
+                <group>
+                    <name>Templates/Applications</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Broker</name>
+                </application>
+                <application>
+                    <name>Log</name>
+                </application>
+                <application>
+                    <name>MQM Queue</name>
+                </application>
+                <application>
+                    <name>MQM Status</name>
+                </application>
+                <application>
+                    <name>Threads</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Log user.log</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>log[/opt/userlog/user.log]</key>
+                    <delay>30s</delay>
+                    <history>2d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Log</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MATCHES_REGEX</type>
+                            <params>^((?!BIP2951I).)*$</params>
+                            <error_handler>DISCARD_VALUE</error_handler>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>MQM LsStatus</name>
+                    <key>mqm.dispLsStatus</key>
+                    <delay>10m</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>Displays information about the active queue managers.</description>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Status</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>MQM dispQmstatusAll</name>
+                    <key>mqm.dispQmstatusAll</key>
+                    <delay>10m</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>Display status information associated with this queue manager</description>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Status</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>MQM dispQmstatusAll CHINIT</name>
+                    <type>DEPENDENT</type>
+                    <key>mqm.dispQmstatusAll.CHINIT</key>
+                    <delay>0</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Status</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.CHINIT</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>mqm.dispQmstatusAll</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>MQM dispQmstatusAll CMDSERV</name>
+                    <type>DEPENDENT</type>
+                    <key>mqm.dispQmstatusAll.CMDSERV</key>
+                    <delay>0</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Status</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.CMDSERV</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>mqm.dispQmstatusAll</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>MQM dispQmstatusAll STATUS</name>
+                    <type>DEPENDENT</type>
+                    <key>mqm.dispQmstatusAll.STATUS</key>
+                    <delay>0</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Status</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.STATUS</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>mqm.dispQmstatusAll</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>GIROS.DLQ curdepth</name>
+                    <key>mqm.queue[curdepth,GIROS.DLQ]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qFailEmail.ERROR curdepth</name>
+                    <key>mqm.queue[curdepth,qFailEmail.ERROR]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qGetFFcdSrvIntSendMoneyTransfer curdepth</name>
+                    <key>mqm.queue[curdepth,qGetFFcdSrvIntSendMoneyTransfer]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qReqFOpSrvIntAuditRegister.bck curdepth</name>
+                    <key>mqm.queue[curdepth,qReqFOpSrvIntAuditRegister.bck]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qReqFOpSrvIntAuditRegister curdepth</name>
+                    <key>mqm.queue[curdepth,qReqFOpSrvIntAuditRegister]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qReqFOpSrvIntCustomerSBICreateCustomer curdepth</name>
+                    <key>mqm.queue[curdepth,qReqFOpSrvIntCustomerSBICreateCustomer]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qRespQGetGenericService curdepth</name>
+                    <key>mqm.queue[curdepth,qRespQGetGenericService]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>SYSTEM.BROKER.AGGR.CONTROL curdepth</name>
+                    <key>mqm.queue[curdepth,SYSTEM.BROKER.AGGR.CONTROL]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>SYSTEM.BROKER.AGGR.REPLY curdepth</name>
+                    <key>mqm.queue[curdepth,SYSTEM.BROKER.AGGR.REPLY]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>SYSTEM.BROKER.AGGR.REQUEST curdepth</name>
+                    <key>mqm.queue[curdepth,SYSTEM.BROKER.AGGR.REQUEST]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>SYSTEM.DEAD.LETTER.QUEUE curdepth</name>
+                    <key>mqm.queue[curdepth,SYSTEM.DEAD.LETTER.QUEUE]</key>
+                    <delay>60s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>GIROS.DLQ maxdepth</name>
+                    <key>mqm.queue[maxdepth,GIROS.DLQ]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qFailEmail.ERROR maxdepth</name>
+                    <key>mqm.queue[maxdepth,qFailEmail.ERROR]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qGetFFcdSrvIntSendMoneyTransfer maxdepth</name>
+                    <key>mqm.queue[maxdepth,qGetFFcdSrvIntSendMoneyTransfer]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qReqFOpSrvIntAuditRegister.bck maxdepth</name>
+                    <key>mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister.bck]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qReqFOpSrvIntAuditRegister maxdepth</name>
+                    <key>mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qReqFOpSrvIntCustomerSBICreateCustomer maxdepth</name>
+                    <key>mqm.queue[maxdepth,qReqFOpSrvIntCustomerSBICreateCustomer]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>qRespQGetGenericService maxdepth</name>
+                    <key>mqm.queue[maxdepth,qRespQGetGenericService]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>SYSTEM.BROKER.AGGR.CONTROL maxdepth</name>
+                    <key>mqm.queue[maxdepth,SYSTEM.BROKER.AGGR.CONTROL]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>SYSTEM.BROKER.AGGR.REPLY maxdepth</name>
+                    <key>mqm.queue[maxdepth,SYSTEM.BROKER.AGGR.REPLY]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>SYSTEM.BROKER.AGGR.REQUEST maxdepth</name>
+                    <key>mqm.queue[maxdepth,SYSTEM.BROKER.AGGR.REQUEST]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>SYSTEM.DEAD.LETTER.QUEUE maxdepth</name>
+                    <key>mqm.queue[maxdepth,SYSTEM.DEAD.LETTER.QUEUE]</key>
+                    <delay>1h</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>MQM Queue</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat UTILITIES_7801</name>
+                    <key>netstat[7801]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat CUSTOMER_7802</name>
+                    <key>netstat[7802]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat CUSTOMER_ORQ_7804</name>
+                    <key>netstat[7804]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat PROVIDERS_7805</name>
+                    <key>netstat[7805]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat SENDMONEYTRANSFER_7844</name>
+                    <key>netstat[7844]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat SAFE_PAYMENT_7845</name>
+                    <key>netstat[7845]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat PAYMONEYTRANSFER_7846</name>
+                    <key>netstat[7846]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat INSURANCE_7848</name>
+                    <key>netstat[7848]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat PAYMENT_GATEWAY_7849</name>
+                    <key>netstat[7849]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat PROXIES_7850</name>
+                    <key>netstat[7850]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat CURRENCY_EXCHANGE_7851</name>
+                    <key>netstat[7851]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat PORTAL_WEB_7855</name>
+                    <key>netstat[7855]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>netstat APN_7856</name>
+                    <key>netstat[7856]</key>
+                    <delay>30s</delay>
+                    <history>30d</history>
+                    <applications>
+                        <application>
+                            <name>Broker</name>
+                        </application>
+                        <application>
+                            <name>Threads</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+        </template>
+    </templates>
+    <triggers>
+        <trigger>
+            <expression>{Template App Broker IBM:mqm.queue[curdepth,qFailEmail.ERROR].last(#4)}&gt;=&#13;
+{Template App Broker IBM:mqm.queue[maxdepth,qFailEmail.ERROR].last()}-{Template App Broker IBM:mqm.queue[maxdepth,qFailEmail.ERROR].last()}*0.50</expression>
+            <name>Cola qFailEmailERROR supera el 50%</name>
+            <priority>AVERAGE</priority>
+            <tags>
+                <tag>
+                    <tag>app</tag>
+                    <value>broker</value>
+                </tag>
+            </tags>
+        </trigger>
+        <trigger>
+            <expression>{Template App Broker IBM:mqm.queue[curdepth,qReqFOpSrvIntAuditRegister.bck].last(#4)}&gt;=&#13;
+{Template App Broker IBM:mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister.bck].last()}-{Template App Broker IBM:mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister.bck].last()}*0.50</expression>
+            <name>Cola qReqFOpSrvIntAuditRegisterBck supera el 50%</name>
+            <priority>AVERAGE</priority>
+            <dependencies>
+                <dependency>
+                    <name>Cola qReqFOpSrvIntAuditRegisterBck supera el 75%</name>
+                    <expression>{Template App Broker IBM:mqm.queue[curdepth,qReqFOpSrvIntAuditRegister.bck].last(#4)}&gt;=&#13;
+{Template App Broker IBM:mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister.bck].last()}-{Template App Broker IBM:mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister.bck].last()}*0.25</expression>
+                </dependency>
+            </dependencies>
+            <tags>
+                <tag>
+                    <tag>app</tag>
+                    <value>broker</value>
+                </tag>
+            </tags>
+        </trigger>
+        <trigger>
+            <expression>{Template App Broker IBM:mqm.queue[curdepth,qReqFOpSrvIntAuditRegister.bck].last(#4)}&gt;=&#13;
+{Template App Broker IBM:mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister.bck].last()}-{Template App Broker IBM:mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister.bck].last()}*0.25</expression>
+            <name>Cola qReqFOpSrvIntAuditRegisterBck supera el 75%</name>
+            <priority>HIGH</priority>
+            <tags>
+                <tag>
+                    <tag>app</tag>
+                    <value>broker</value>
+                </tag>
+            </tags>
+        </trigger>
+        <trigger>
+            <expression>{Template App Broker IBM:mqm.queue[curdepth,qReqFOpSrvIntAuditRegister].last(#4)}&gt;=&#13;
+{Template App Broker IBM:mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister].last()}-{Template App Broker IBM:mqm.queue[maxdepth,qReqFOpSrvIntAuditRegister].last()}*0.50</expression>
+            <name>Cola qReqFOpSrvIntAuditRegister supera el 50%</name>
+            <priority>AVERAGE</priority>
+            <tags>
+                <tag>
+                    <tag>app</tag>
+                    <value>broker</value>
+                </tag>
+            </tags>
+        </trigger>
+        <trigger>
+            <expression>{Template App Broker IBM:mqm.queue[curdepth,qRespQGetGenericService].last(#4)}&gt;=&#13;
+{Template App Broker IBM:mqm.queue[maxdepth,qRespQGetGenericService].last()}-{Template App Broker IBM:mqm.queue[maxdepth,qRespQGetGenericService].last()}*0.50</expression>
+            <name>Cola qRespQGetGenericService supera el 50%</name>
+            <priority>AVERAGE</priority>
+            <tags>
+                <tag>
+                    <tag>app</tag>
+                    <value>broker</value>
+                </tag>
+            </tags>
+        </trigger>
+        <trigger>
+            <expression>{Template App Broker IBM:mqm.dispQmstatusAll.CHINIT.str(RUNNING)}=0 or {Template App Broker IBM:mqm.dispQmstatusAll.CMDSERV.str(RUNNING)}=0 &#13;
+	or {Template App Broker IBM:mqm.dispQmstatusAll.STATUS.str(RUNNING)}=0 &#13;
+	or {Template App Broker IBM:mqm.dispLsStatus.str(RUNNING)}=0</expression>
+            <name>MQM Status is not RUNNING</name>
+            <priority>DISASTER</priority>
+            <tags>
+                <tag>
+                    <tag>app</tag>
+                    <value>broker</value>
+                </tag>
+            </tags>
+        </trigger>
+    </triggers>
+    <graphs>
+        <graph>
+            <name>Broker curdepth GIROSDLQ</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <calc_fnc>MAX</calc_fnc>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>mqm.queue[curdepth,GIROS.DLQ]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Broker curdepth qFailEmailERROR</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <calc_fnc>MAX</calc_fnc>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>mqm.queue[curdepth,qFailEmail.ERROR]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Broker curdepth qReqFOpSrvIntAuditRegister</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <calc_fnc>MAX</calc_fnc>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>mqm.queue[curdepth,qReqFOpSrvIntAuditRegister]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Broker curdepth qReqFOpSrvIntAuditRegisterBck</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <calc_fnc>MAX</calc_fnc>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>mqm.queue[curdepth,qReqFOpSrvIntAuditRegister.bck]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Broker curdepth qReqFOpSrvIntCustomerSBICreateCustomer</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <calc_fnc>MAX</calc_fnc>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>mqm.queue[curdepth,qReqFOpSrvIntCustomerSBICreateCustomer]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Broker curdepth qRespQGetGenericService</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <calc_fnc>MAX</calc_fnc>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>mqm.queue[curdepth,qRespQGetGenericService]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Broker Threads</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7856]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>F63100</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7851]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7802]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>3</sortorder>
+                    <color>A54F10</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7804]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>4</sortorder>
+                    <color>FC6EA3</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7848]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>5</sortorder>
+                    <color>6C59DC</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7849]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>6</sortorder>
+                    <color>AC8C14</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7846]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>7</sortorder>
+                    <color>611F27</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7855]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>8</sortorder>
+                    <color>F230E0</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7805]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>9</sortorder>
+                    <color>5CCD18</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7850]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>10</sortorder>
+                    <color>BB2A02</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7845]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>11</sortorder>
+                    <color>5A2B57</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7844]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>12</sortorder>
+                    <color>89ABF8</color>
+                    <item>
+                        <host>Template App Broker IBM</host>
+                        <key>netstat[7801]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
+</zabbix_export>
