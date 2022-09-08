@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2020-03-02T15:32:50Z</date>
+    <date>2021-04-14T23:30:36Z</date>
     <groups>
         <group>
             <name>Templates/Databases</name>
@@ -21,25 +21,47 @@
                     <name>ASM Diskgroup</name>
                 </application>
                 <application>
+                    <name>Oracle</name>
+                </application>
+                <application>
                     <name>Query</name>
                 </application>
             </applications>
             <items>
                 <item>
-                    <name>asm.diskgroup.info</name>
-                    <key>asm.diskgroup.info</key>
-                    <delay>10m</delay>
-                    <history>0</history>
+                    <name>Password expires user oracle</name>
+                    <key>get_expiration_user[oracle]</key>
+                    <delay>1h</delay>
+                    <history>2d</history>
                     <trends>0</trends>
-                    <value_type>TEXT</value_type>
+                    <status>DISABLED</status>
+                    <value_type>FLOAT</value_type>
+                    <units>d</units>
                     <applications>
                         <application>
-                            <name>ASM Diskgroup</name>
-                        </application>
-                        <application>
-                            <name>Query</name>
+                            <name>Oracle</name>
                         </application>
                     </applications>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=-1</expression>
+                            <name>Contraseña usuario &quot;oracle&quot; expira mañana</name>
+                            <priority>AVERAGE</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&gt;=0</expression>
+                            <name>Contraseña usuario &quot;oracle&quot; ha expirado!</name>
+                            <priority>HIGH</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
                 </item>
             </items>
             <discovery_rules>
@@ -50,9 +72,9 @@
                     <lifetime>1w</lifetime>
                     <item_prototypes>
                         <item_prototype>
-                            <name>ASM Diskgroup: Espacio libre en {#DISKGROUP}</name>
+                            <name>ASM Diskgroup {#HOST}: Espacio libre en {#DISKGROUP}</name>
                             <type>DEPENDENT</type>
-                            <key>asm.diskgroup.free[{#DISKGROUP}]</key>
+                            <key>asm.diskgroup.free[{#HOST},{#DISKGROUP}]</key>
                             <delay>0</delay>
                             <history>30d</history>
                             <units>B</units>
@@ -61,7 +83,7 @@
                                     <name>ASM Diskgroup</name>
                                 </application>
                                 <application>
-                                    <name>Query</name>
+                                    <name>Oracle</name>
                                 </application>
                             </applications>
                             <preprocessing>
@@ -80,130 +102,56 @@
                                 </step>
                             </preprocessing>
                             <master_item>
-                                <key>asm.diskgroup.info</key>
+                                <key>asm.diskgroup.info[{#HOST}]</key>
                             </master_item>
                         </item_prototype>
                         <item_prototype>
-                            <name>ASM Diskgroup: Espacio total en {#DISKGROUP}</name>
-                            <type>DEPENDENT</type>
-                            <key>asm.diskgroup.total[{#DISKGROUP}]</key>
-                            <delay>0</delay>
-                            <history>30d</history>
-                            <units>B</units>
+                            <name>ASM Diskgroup {#HOST}: Info</name>
+                            <key>asm.diskgroup.info[{#HOST}]</key>
+                            <delay>1h</delay>
+                            <history>0</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
                             <applications>
                                 <application>
                                     <name>ASM Diskgroup</name>
+                                </application>
+                                <application>
+                                    <name>Oracle</name>
                                 </application>
                                 <application>
                                     <name>Query</name>
                                 </application>
                             </applications>
-                            <preprocessing>
-                                <step>
-                                    <type>JSONPATH</type>
-                                    <params>$..{#DISKGROUP}.TOTAL_MB</params>
-                                </step>
-                                <step>
-                                    <type>REGEX</type>
-                                    <params>[0-9]+
-\0</params>
-                                </step>
-                                <step>
-                                    <type>MULTIPLIER</type>
-                                    <params>1048576</params>
-                                </step>
-                            </preprocessing>
-                            <master_item>
-                                <key>asm.diskgroup.info</key>
-                            </master_item>
                         </item_prototype>
                         <item_prototype>
-                            <name>ASM Diskgroup: Espacio usado en {#DISKGROUP}</name>
+                            <name>ASM Diskgroup {#HOST}: Espacio usado en {#DISKGROUP}</name>
                             <type>CALCULATED</type>
-                            <key>asm.diskgroup.used[{#DISKGROUP}]</key>
+                            <key>asm.diskgroup.used[{#HOST},{#DISKGROUP}]</key>
+                            <delay>1h</delay>
                             <history>30d</history>
                             <units>B</units>
-                            <params>last(&quot;asm.diskgroup.total[{#DISKGROUP}]&quot;) - last(&quot;asm.diskgroup.free[{#DISKGROUP}]&quot;)</params>
+                            <params>last(&quot;asm.diskgroup.total[{#HOST},{#DISKGROUP}]&quot;) - last(&quot;asm.diskgroup.free[{#HOST},{#DISKGROUP}]&quot;)</params>
                             <applications>
                                 <application>
                                     <name>ASM Diskgroup</name>
                                 </application>
                                 <application>
-                                    <name>Query</name>
+                                    <name>Oracle</name>
                                 </application>
                             </applications>
                         </item_prototype>
                     </item_prototypes>
-                    <trigger_prototypes>
-                        <trigger_prototype>
-                            <expression>({template_oracle:asm.diskgroup.free[{#DISKGROUP}].last()} / {template_oracle:asm.diskgroup.total[{#DISKGROUP}].last()} ) &lt;= 0.1</expression>
-                            <name>Espacio libre en {#DISKGROUP} con menos del 1%</name>
-                            <priority>DISASTER</priority>
-                            <tags>
-                                <tag>
-                                    <tag>app</tag>
-                                    <value>asm</value>
-                                </tag>
-                            </tags>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>({template_oracle:asm.diskgroup.free[{#DISKGROUP}].last()} / {template_oracle:asm.diskgroup.total[{#DISKGROUP}].last()} ) &lt;= 0.5</expression>
-                            <name>Espacio libre en {#DISKGROUP} con menos del 5%</name>
-                            <priority>HIGH</priority>
-                            <dependencies>
-                                <dependency>
-                                    <name>Espacio libre en {#DISKGROUP} con menos del 1%</name>
-                                    <expression>({template_oracle:asm.diskgroup.free[{#DISKGROUP}].last()} / {template_oracle:asm.diskgroup.total[{#DISKGROUP}].last()} ) &lt;= 0.1</expression>
-                                </dependency>
-                            </dependencies>
-                            <tags>
-                                <tag>
-                                    <tag>app</tag>
-                                    <value>asm</value>
-                                </tag>
-                            </tags>
-                        </trigger_prototype>
-                        <trigger_prototype>
-                            <expression>({template_oracle:asm.diskgroup.free[{#DISKGROUP}].last()} / {template_oracle:asm.diskgroup.total[{#DISKGROUP}].last()} ) &lt;= 0.10</expression>
-                            <name>Espacio libre en {#DISKGROUP} con menos del 10%</name>
-                            <priority>AVERAGE</priority>
-                            <dependencies>
-                                <dependency>
-                                    <name>Espacio libre en {#DISKGROUP} con menos del 5%</name>
-                                    <expression>({template_oracle:asm.diskgroup.free[{#DISKGROUP}].last()} / {template_oracle:asm.diskgroup.total[{#DISKGROUP}].last()} ) &lt;= 0.5</expression>
-                                </dependency>
-                            </dependencies>
-                            <tags>
-                                <tag>
-                                    <tag>app</tag>
-                                    <value>asm</value>
-                                </tag>
-                            </tags>
-                        </trigger_prototype>
-                    </trigger_prototypes>
                     <graph_prototypes>
                         <graph_prototype>
                             <name>ASM Diskgroup: Espacio en {#DISKGROUP}</name>
                             <type>STACKED</type>
-                            <ymax_type_1>ITEM</ymax_type_1>
-                            <ymax_item_1>
-                                <host>template_oracle</host>
-                                <key>asm.diskgroup.total[{#DISKGROUP}]</key>
-                            </ymax_item_1>
                             <graph_items>
                                 <graph_item>
                                     <color>1A7C11</color>
                                     <item>
                                         <host>template_oracle</host>
-                                        <key>asm.diskgroup.used[{#DISKGROUP}]</key>
-                                    </item>
-                                </graph_item>
-                                <graph_item>
-                                    <sortorder>1</sortorder>
-                                    <color>FFEE58</color>
-                                    <item>
-                                        <host>template_oracle</host>
-                                        <key>asm.diskgroup.free[{#DISKGROUP}]</key>
+                                        <key>asm.diskgroup.used[{#HOST},{#DISKGROUP}]</key>
                                     </item>
                                 </graph_item>
                             </graph_items>
@@ -217,12 +165,17 @@
                     <lifetime>1w</lifetime>
                     <item_prototypes>
                         <item_prototype>
-                            <name>Tablespace {#SID} {#VERSION} - {#TABLESPACE}</name>
-                            <key>tablespace.info[{#SID},{#TABLESPACE},{#VERSION}]</key>
+                            <name>Tablespace {#SID} - {#TABLESPACE}</name>
+                            <key>tablespace.info[{#SID},{#TABLESPACE}]</key>
                             <delay>1h</delay>
                             <history>7d</history>
                             <value_type>FLOAT</value_type>
                             <units>%</units>
+                            <applications>
+                                <application>
+                                    <name>Oracle</name>
+                                </application>
+                            </applications>
                             <application_prototypes>
                                 <application_prototype>
                                     <name>Tablespace</name>
@@ -237,7 +190,7 @@
                                     <dependencies>
                                         <dependency>
                                             <name>Tablespace {#SID} - {#TABLESPACE} &gt;=99.5%</name>
-                                            <expression>{template_oracle:tablespace.info[{#SID},{#TABLESPACE},{#VERSION}].last()}&gt;=99.5</expression>
+                                            <expression>{template_oracle:tablespace.info[{#SID},{#TABLESPACE}].last()}&gt;=99.5</expression>
                                         </dependency>
                                     </dependencies>
                                     <tags>
