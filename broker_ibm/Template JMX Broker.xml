@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2022-09-08T00:02:14Z</date>
+    <date>2022-09-08T20:04:31Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -673,6 +673,70 @@
                     </triggers>
                 </item>
                 <item>
+                    <name>os System Cpu Load</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=OperatingSystem&quot;,SystemCpuLoad]</key>
+                    <delay>60</delay>
+                    <history>7d</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <username>{$JMX_USER}</username>
+                    <password>{$JMX_PASS}</password>
+                    <applications>
+                        <application>
+                            <name>Operating System</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>100</params>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                </item>
+                <item>
+                    <name>os System Load Average</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=OperatingSystem&quot;,SystemLoadAverage]</key>
+                    <delay>60</delay>
+                    <history>7d</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <username>{$JMX_USER}</username>
+                    <password>{$JMX_PASS}</password>
+                    <applications>
+                        <application>
+                            <name>Operating System</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>100</params>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                </item>
+                <item>
+                    <name>Name Execution Group</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Runtime&quot;,SystemProperties.get(broker.eglabel)]</key>
+                    <delay>3600</delay>
+                    <history>0</history>
+                    <trends>0</trends>
+                    <status>DISABLED</status>
+                    <value_type>CHAR</value_type>
+                    <username>{$JMX_USER}</username>
+                    <password>{$JMX_PASS}</password>
+                    <applications>
+                        <application>
+                            <name>Runtime</name>
+                        </application>
+                    </applications>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                </item>
+                <item>
                     <name>jvm Uptime</name>
                     <type>JMX</type>
                     <key>jmx[&quot;java.lang:type=Runtime&quot;,Uptime]</key>
@@ -706,7 +770,7 @@
                     <type>JMX</type>
                     <key>jmx[&quot;java.lang:type=Runtime&quot;,VmName]</key>
                     <delay>3600</delay>
-                    <history>7d</history>
+                    <history>0</history>
                     <trends>0</trends>
                     <value_type>CHAR</value_type>
                     <username>{$JMX_USER}</username>
@@ -731,7 +795,7 @@
                     <type>JMX</type>
                     <key>jmx[&quot;java.lang:type=Runtime&quot;,VmVersion]</key>
                     <delay>3600</delay>
-                    <history>7d</history>
+                    <history>0</history>
                     <trends>0</trends>
                     <value_type>CHAR</value_type>
                     <username>{$JMX_USER}</username>
