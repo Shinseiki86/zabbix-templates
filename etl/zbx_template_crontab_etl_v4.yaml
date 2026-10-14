@@ -1,0 +1,245 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 6d60d8638479418ea114d37a7be726ca
+      name: ETL
+    - uuid: a571c0d144b14fd4a87a9d9b2aa9fcd6
+      name: Templates/Applications
+  templates:
+    - uuid: 3e3810524c69471ab19a21ff9c403b65
+      template: 'Template ETL'
+      name: 'Template ETL'
+      description: 'Template para monitoreo de ETLs'
+      groups:
+        - name: ETL
+        - name: Templates/Applications
+      items:
+        - uuid: 4d38224d41dd4df5a61254bf6e349dff
+          name: 'Get Etls Running'
+          key: etl.running
+          history: 1d
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: DISCARD_UNCHANGED
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: ETL
+        - uuid: 2e956e6960414d459e85eafb2c3ef6ce
+          name: 'Get Etls Running Count'
+          type: DEPENDENT
+          key: etl.running.count
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var text = value || ''; // Si el valor está vacío, asigna una cadena vacía
+                  var lines = text.split('\n'); // Dividir el texto en líneas usando el carácter de nueva línea como separador
+                  var numberOfLines = text ? lines.length : 0; // Si el texto está vacío, devuelve 0, de lo contrario devuelve el número de líneas
+                  
+                  return numberOfLines; // Devolver el número de líneas
+          master_item:
+            key: etl.running
+          tags:
+            - tag: Application
+              value: ETL
+        - uuid: 3075cbc590c740fb9031f1fa937dd1c7
+          name: Crontab
+          key: 'vfs.file.contents[/etc/crontab]'
+          delay: 1h
+          history: 30d
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: DISCARD_UNCHANGED
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: Cron
+        - uuid: c5e9268312fd4f9c8d20aba50d342ae7
+          name: 'Crontab time modify'
+          key: 'vfs.file.time[/etc/crontab,modify]'
+          history: 30d
+          units: unixtime
+          preprocessing:
+            - type: DISCARD_UNCHANGED
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: Cron
+      discovery_rules:
+        - uuid: 8b4d5d6439c045dcaa394426e0dfe5f0
+          name: 'Etls discovery'
+          key: etl.discovery
+          delay: 1h
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Discovery de etls configuradas en el crontab.'
+          item_prototypes:
+            - uuid: c397d564454c456fadfc2170e27f096e
+              name: 'Log {#ETLLOGNAME} cant registros'
+              type: DEPENDENT
+              key: 'etl.rows[{#ETLLOGNAME}]'
+              delay: '0'
+              history: 30d
+              description: 'Extrae del log la cantidad de registros procesados.'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      const texto = value;
+                      
+                      // Definir la expresión regular
+                      const regex = /Update DetectID OTP.*?R=(\d+)/;
+                      // Buscar la coincidencia en todo el texto
+                      const match = texto.match(regex);
+                      
+                      if (match) {
+                          const cantReg = Number(match[1]);
+                      
+                          return cantReg ;
+                      }
+                      
+                      // Si no se encuentra coincidencia, retornar null
+                      return null;
+                      
+              master_item:
+                key: 'system.run[sh /etc/zabbix/scripts/tailLogEtl.sh {#ETLLOGPATH} {#ETLLOGNAME_WILDCARD}]'
+              tags:
+                - tag: app
+                  value: ETL
+                - tag: type
+                  value: rows
+            - uuid: ad72b47c51da4c079e92f70a4e3d09f5
+              name: 'Log {#ETLLOGNAME} tiempo ejecución'
+              type: DEPENDENT
+              key: 'etl.time[{#ETLLOGNAME}]'
+              delay: '0'
+              history: 30d
+              units: s
+              description: 'Extrae del log el tiempo total de ejecución de la ETL'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      const texto = value;
+                      
+                      // Definir la expresión regular
+                      const regex = /Processing ended after (.*?)( \(|\.).*/;
+                      // Buscar la coincidencia en todo el texto
+                      const match = texto.match(regex);
+                      
+                      if (match) {
+                          const tiempo = match[1]; // Extraer el grupo 2
+                          // Inicializar los segundos
+                          var totalSegundos = 0;
+                          // Definir la expresión regular para extraer días, horas, minutos y segundos
+                          const regexTiempo = /(?:(\d+) days?, )?(?:(\d+) hours?, )?(?:(\d+) minutes?(?: and )?)?(?:(\d+) seconds?)?/;
+                          const match = tiempo.match(regexTiempo);
+                      
+                          if (match) {
+                              const dias = match[1] ? parseInt(match[1]) : 0;
+                              const horas = match[2] ? parseInt(match[2]) : 0;
+                              const minutos = match[3] ? parseInt(match[3]) : 0;
+                              const segundos = match[4] ? parseInt(match[4]) : 0;
+                              
+                              totalSegundos = (dias * 86400) + (horas * 3600) + (minutos * 60) + segundos;
+                          }
+                      
+                          return totalSegundos;
+                      }
+                      
+                      // Si no se encuentra coincidencia, retornar null
+                      return null;
+                      
+              master_item:
+                key: 'system.run[sh /etc/zabbix/scripts/tailLogEtl.sh {#ETLLOGPATH} {#ETLLOGNAME_WILDCARD}]'
+              tags:
+                - tag: app
+                  value: ETL
+                - tag: type
+                  value: time
+            - uuid: dab6ddc1acd541b2a8779ff47378f9c8
+              name: 'Log {#ETLLOGNAME}'
+              key: 'system.run[sh /etc/zabbix/scripts/tailLogEtl.sh {#ETLLOGPATH} {#ETLLOGNAME_WILDCARD}]'
+              delay: 5m
+              history: 4w
+              value_type: TEXT
+              trends: '0'
+              description: |
+                Cron:          {#ETLCRON}
+                Version:      {#ETLVERSION}
+                Error level: {#ETLLOGLEVEL}
+                ETL: {#ETLFILE}
+                
+                system.run[tail -n 20 $(ls -t {#ETLLOGPATH}$(echo {#ETLLOGNAME} | sed 's/\$(date +%Y%m%d)/*/') | head -1) | grep -E "(Finished processing|result=|Processing ended|Could not read|Processing stopped)"]
+              preprocessing:
+                - type: DISCARD_UNCHANGED
+                  parameters:
+                    - ''
+              tags:
+                - tag: app
+                  value: ETL
+                - tag: type
+                  value: log
+              trigger_prototypes:
+                - uuid: dc61240237dd404ba8915bf6b76be38a
+                  expression: 'find(/Template ETL/system.run[sh /etc/zabbix/scripts/tailLogEtl.sh {#ETLLOGPATH} {#ETLLOGNAME_WILDCARD}],,"regexp","(result=\\[false\\]|Could not read)")=1'
+                  name: '[ PROG ] ETL: {#ETLLOGNAME} ( Error )'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'No existe log {#ETLLOGNAME}'
+                      expression: 'last(/Template ETL/vfs.file.exists.wildcard[{#ETLLOGPATH}{#ETLLOGNAME_WILDCARD}])=0'
+                  tags:
+                    - tag: app
+                      value: ETL
+                    - tag: type
+                      value: status
+                - uuid: 477267baec0249c5902a06ba4a3c5cc7
+                  expression: 'find(/Template ETL/system.run[sh /etc/zabbix/scripts/tailLogEtl.sh {#ETLLOGPATH} {#ETLLOGNAME_WILDCARD}],,"regexp","(result=\\[false\\]|Could not read)")=0'
+                  name: 'Éxito en {#ETLLOGNAME}'
+                  priority: INFO
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'No existe log {#ETLLOGNAME}'
+                      expression: 'last(/Template ETL/vfs.file.exists.wildcard[{#ETLLOGPATH}{#ETLLOGNAME_WILDCARD}])=0'
+                  tags:
+                    - tag: app
+                      value: ETL
+                    - tag: type
+                      value: status
+            - uuid: 9fe9cc4199bf433d8e418625e5c23b44
+              name: 'Log {#ETLLOGNAME} Existe'
+              key: 'vfs.file.exists.wildcard[{#ETLLOGPATH}{#ETLLOGNAME_WILDCARD}]'
+              delay: 1h
+              history: 4w
+              tags:
+                - tag: app
+                  value: ETL
+                - tag: type
+                  value: check
+              trigger_prototypes:
+                - uuid: 90d642b6879a4547b73814ef32d10f75
+                  expression: 'last(/Template ETL/vfs.file.exists.wildcard[{#ETLLOGPATH}{#ETLLOGNAME_WILDCARD}])=0'
+                  name: 'No existe log {#ETLLOGNAME}'
+                  manual_close: 'YES'
+                  tags:
+                    - tag: app
+                      value: ETL
+                    - tag: type
+                      value: status
+  triggers:
+    - uuid: 3ca3a716b32d44af8e684ced3587a541
+      expression: 'last(/Template ETL/etl.running)<>"" or last(/Template ETL/etl.running.count)>0'
+      name: '[ PROG ] ETL: Duración ( >5m )'
+      priority: WARNING
+      description: |
+        [ ETL ] {#ETLLOGNAME} : Error
+        Hay ETL´s mas de 5 minutos en ejecución
